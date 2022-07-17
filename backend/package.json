@@ -4,8 +4,11 @@
   "description": "weather",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "db:seed": "node seeds/index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "start:prod": "pm2-runtime start pm2.yaml --env production",
+    "db:seed": "node seeds/index.js",
+    "pm2:delete": "pm2 delete clime-app"
   },
   "keywords": [
     "nodejs"

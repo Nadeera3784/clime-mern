@@ -19,6 +19,7 @@ let dir_base = __dirname;
 App.use(
     helmet({
       contentSecurityPolicy: false,
+      crossOriginResourcePolicy: false,
     })
 );
 

@@ -1,31 +1,45 @@
 import {useContext, useEffect, useState} from 'react';
+import moment from 'moment'
 
 import {AppContext}  from '@/store/AppContext';
 import Layout        from '@/components/Layout/Layout';
 import httpService   from '@/services/Http';
+import AppConstants  from '@/constants/AppConstants';
 
 function Dashboard() {
 
     const {state, dispatch} = useContext(AppContext);
 
     const [loading, setLoading] = useState(false);
+    const [initialized, setInitialized] = useState(false);
+    const [orderBy, setOrderBy] = useState({'order' : 'createdAt'});
+    const [weatherReports, setWeatherReports] = useState([]);
 
-    const [weatherReports, setWeatherReports] = useState({});
-
-    const initWeatherReports =  function() {
+    useEffect(() => {
         setLoading(true);
-        httpService.get('/account/weather').then((response) => {
-            setLoading(false);
-            //dispatch({type: AppConstants.GET_WEATHER_REPORTS, payload: response.data.data});
+        httpService.get('/account/weather', {
+            params: {
+               'orderBy' : orderBy.order,
+            }
+        }).then((response) => {
+            dispatch({type: AppConstants.GET_WEATHER_REPORTS, payload: response.data.data});
             setWeatherReports(response.data.data);
+            setLoading(false);
+            setInitialized(true);
         }).catch((error) => {
             setLoading(true);
         })
-    } 
+    }, [orderBy]);
 
-    useEffect(() => {
-        initWeatherReports();
-    }, []);
+    const onClickSetOrder =  function(event){
+        event.preventDefault();
+        setOrderBy({'order' : 'value'}) 
+    }
+
+    const onClickResetOrder =  function(event){
+        event.preventDefault();
+        setOrderBy({'order' : 'createdAt'}) 
+    }
 
     return (
         <Layout>
@@ -38,10 +52,10 @@ function Dashboard() {
                         <hr/>
                         <div className="w-full block">
                             <div className="float-right pt-3">
-                                <button  type="button" className="inline-flex justify-center items-center space-x-2 border font-semibold focus:outline-none px-3 py-2 leading-5 text-sm rounded border-red-200 bg-red-200 text-red-700 hover:text-red-700 hover:bg-red-300 hover:border-red-300 focus:ring focus:ring-red-500 focus:ring-opacity-50 active:bg-red-200">
+                                <button  type="button" onClick={(event) => onClickSetOrder(event)} className="inline-flex justify-center items-center space-x-2 border font-semibold focus:outline-none px-3 py-2 leading-5 text-sm rounded border-red-200 bg-red-200 text-red-700 hover:text-red-700 hover:bg-red-300 hover:border-red-300 focus:ring focus:ring-red-500 focus:ring-opacity-50 active:bg-red-200">
                                 Hottest First
                                 </button>
-                                <button type="button" className="inline-flex justify-center items-center space-x-2 border font-semibold focus:outline-none px-3 py-2 leading-5 text-sm rounded border-gray-100 bg-gray-100 text-gray-600 hover:text-gray-600 hover:bg-gray-200 hover:border-gray-200 focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-gray-100">
+                                <button type="button" onClick={(event) => onClickResetOrder(event)} className="inline-flex justify-center items-center space-x-2 border font-semibold focus:outline-none px-3 py-2 leading-5 text-sm rounded border-gray-100 bg-gray-100 text-gray-600 hover:text-gray-600 hover:bg-gray-200 hover:border-gray-200 focus:ring focus:ring-gray-500 focus:ring-opacity-25 active:bg-gray-100">
                                 Reset Order
                                 </button>
                             </div>
@@ -59,28 +73,36 @@ function Dashboard() {
                             </div>
                         }
 
-                           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                               { weatherReports  && for (const property in object) (
-                                <div class="space-y-1">
-                                    <h2 class="text-3xl md:text-4xl font-extrabold mb-4 text-center">Colombo</h2>
-                                    <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
-                                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                            <tbody>
-                                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                        date
-                                                    </th>
-                                                    <td class="py-4 px-6">
-                                                       celsius
-                                                    </td>
-                                                    <td class="py-4 px-6">
-                                                        fahrenheit
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                               { 
+                               
+                               !loading  && Object.keys(weatherReports).map((value, key) => (
+                                    <div className="space-y-1" key={key}>
+                                        <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-center">{value}</h2>
+                                        <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
+                                            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                                <tbody>
+                                                {
+                                                    weatherReports[value].map((data, i) => (
+                                                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" key={i}>
+                                                        <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                           {moment(data.date).format("ddd,  DD MMMM YYYY HH:mm A")}
+                                                        </th>
+                                                        <td className="py-4 px-6">
+                                                           {data.celsius}
+                                                        </td>
+                                                        <td className="py-4 px-6">
+                                                           {data.fahrenheit}
+                                                        </td>
+                                                    </tr>
+                                                    ))
+                                                }
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
+                                  )
+                                )
                             }
                             </div>
 

@@ -1,17 +1,31 @@
 import axios from 'axios';
+
 import AuthService from '@/services/Auth';
 import AppConstants from '@/constants/AppConstants';
 
-const { getToken } = AuthService();
+const { getToken , removeToken} = AuthService();
 
 const http = axios.create({
-    baseURL: 'http://127.0.0.1:3030/api/v1',
+    baseURL: import.meta.env.VITE_API_URL,
 })
-http.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(AppConstants.AUTH_TOKEN)}`;
+
+http.interceptors.request.use(async function (config) {
+    const token = await getToken(AppConstants.AUTH_TOKEN);
+    if (token) {
+        config.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+}, function (error) {
+    return Promise.reject(error);
+});
 
 http.interceptors.response.use(function (response) {
     return Promise.resolve(response);
 }, function (error) {
+    if(error.response.status === 401){
+        removeToken(AppConstants.AUTH_TOKEN);
+        location.reload();
+    }
     return Promise.reject(error);
 });
 

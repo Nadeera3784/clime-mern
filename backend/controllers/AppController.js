@@ -19,12 +19,17 @@ const AppController = {
     },
 
     async weather(request, response, next){
-       const weatherEntries = await WeatherEntry.service.getAllWeatherEntries({user_id : mongoose.Types.ObjectId(request.user.id)}, {'value' : -1});
+       const {orderBy} = request.query;
+       let orderQuery = {'createdAt' : -1};
+       if(orderBy == 'value'){
+         orderQuery = {'value' : -1};
+       }
+       const weatherEntries = await WeatherEntry.service.getAllWeatherEntries({user_id : mongoose.Types.ObjectId(request.user.id)}, orderQuery);
        let weatherEntriesArray = [];
        let data = [];
        if(weatherEntries){
             for (let index = 0; index < weatherEntries.length; index++) {
-                const fahrenheit = (weatherEntries[index].value * 1.8) + 32;
+                const fahrenheit = ((weatherEntries[index].value * 1.8) + 32).toFixed(2);
                 weatherEntriesArray.push({
                     id          : weatherEntries[index]._id,
                     city        : weatherEntries[index].city_id.name,

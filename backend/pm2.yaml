@@ -1,0 +1,12 @@
+apps:
+  - script: ./index.js
+    name: clime-app
+    watch: true
+    instances: max
+    exec_mode: cluster
+    env:
+      NODE_ENV: development
+      PORT: 3030
+    env_production:
+      NODE_ENV: production
+      PORT: 3030

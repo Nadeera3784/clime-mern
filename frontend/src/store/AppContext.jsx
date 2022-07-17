@@ -1,12 +1,16 @@
 import React, {createContext, useReducer} from "react";
 
-import AppReducer from './AppReducer';
+import AppReducer from '@/store/AppReducer';
+import AuthService from '@/services/Auth';
+import AppConstants from '@/constants/AppConstants';
 
 export const AppContext = createContext();
 
+const { getToken } = AuthService();
+
 const InitialState = {
-    auth_status  : false,
-    weather_reports : {}
+    auth_status  : (getToken(AppConstants.AUTH_TOKEN)) ? true : false,
+    weather_reports : []
 } 
 
 const AppProvider = ({ children }) => {

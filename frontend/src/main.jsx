@@ -6,9 +6,10 @@ import AppProvider from './store/AppContext';
 import './assets/css/index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <AppProvider>
     <BrowserRouter>
-       <App/>
+      <AppProvider>
+          <App/>
+       </AppProvider>
     </BrowserRouter>
-  </AppProvider>
+ 
 )
