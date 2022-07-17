@@ -59,7 +59,7 @@ const AuthController = {
               }
               bcrypt.compare(password, document.password, async function (error, result){
                 if(result === true) {
-                    ///Event.dispatch(AppConstants.EVENT_UPDATE_WEATHER, {id : document._id});
+                    Event.dispatch(AppConstants.EVENT_UPDATE_WEATHER, {id : document._id});
                     await Auth.tokenGenerate(document, response);
                 }else{
                     response.status(400).json({
