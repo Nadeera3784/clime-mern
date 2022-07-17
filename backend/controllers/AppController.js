@@ -2,7 +2,7 @@ const mongoose            = require('mongoose');
 
 const AppConstants        = require('../constants/AppConstants.js');
 const WeatherEntry        = require('../services/WeatherEntry');
-const User        = require('../services/User');
+const User                = require('../services/User');
 
 const AppController = {
 
