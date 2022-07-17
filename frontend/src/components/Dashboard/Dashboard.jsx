@@ -23,7 +23,6 @@ function Dashboard() {
             }
         }).then((response) => {
             dispatch({type: AppConstants.GET_WEATHER_REPORTS, payload: response.data.data});
-            setWeatherReports(response.data.data);
             setLoading(false);
             setInitialized(true);
         }).catch((error) => {
@@ -76,14 +75,14 @@ function Dashboard() {
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                { 
                                
-                               !loading  && Object.keys(weatherReports).map((value, key) => (
+                               !loading  && Object.keys(state.weather_reports).map((value, key) => (
                                     <div className="space-y-1" key={key}>
                                         <h2 className="text-3xl md:text-4xl font-extrabold mb-4 text-center">{value}</h2>
                                         <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
                                             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                                 <tbody>
                                                 {
-                                                    weatherReports[value].map((data, i) => (
+                                                    state.weather_reports[value].map((data, i) => (
                                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700" key={i}>
                                                         <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                                            {moment(data.date).format("ddd,  DD MMMM YYYY HH:mm A")}
