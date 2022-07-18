@@ -42,7 +42,7 @@ function Login() {
         validate,
         onSubmit: async function(payload, { resetForm }){
           setLoading(true);
-          httpService.post('/auth/login', payload).then(async function (response) {
+          httpService.post('/auth/login', payload).then(async function (response) {           
             await setToken(AppConstants.AUTH_TOKEN, response.data.data.accessToken);
             await setToken(AppConstants.AUTH_REFRESH_TOKEN, response.data.data.refreshToken);
             dispatch({type: AppConstants.AUTH_SET_USER, payload: true});

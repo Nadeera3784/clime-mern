@@ -17,17 +17,19 @@ function Dashboard() {
 
     useEffect(() => {
         setLoading(true);
-        httpService.get('/account/weather', {
-            params: {
-               'orderBy' : orderBy.order,
-            }
-        }).then((response) => {
-            dispatch({type: AppConstants.GET_WEATHER_REPORTS, payload: response.data.data});
-            setLoading(false);
-            setInitialized(true);
-        }).catch((error) => {
-            setLoading(true);
-        })
+        setTimeout( async() => {
+            httpService.get('/account/weather', {
+                params: {
+                'orderBy' : orderBy.order,
+                }
+            }).then((response) => {
+                dispatch({type: AppConstants.GET_WEATHER_REPORTS, payload: response.data.data});
+                setLoading(false);
+                setInitialized(true);
+            }).catch((error) => {
+                setLoading(true);
+            })
+        }, 2000);
     }, [orderBy]);
 
     const onClickSetOrder =  function(event){

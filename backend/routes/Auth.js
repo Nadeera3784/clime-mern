@@ -26,7 +26,7 @@ router.post('/auth/register',
     check('email').custom(function (value) {
         return User.service.findByEmail(value).then(function (email) {
           if (email) {
-            return Promise.reject(value + 'already exists, please choose another');
+            return Promise.reject(value + ' already exists, please choose another');
           }
         });
     }),

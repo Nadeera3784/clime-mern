@@ -1,14 +1,19 @@
 import React, {useState} from 'react';
-import { Link , useNavigate} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 
 import AlertError from '@/components/Shared/Alert/Error';
+import AlertSuccess from '@/components/Shared/Alert/Success';
+
 import httpService from '@/services/Http';
-import AuthService from '@/services/Auth';
 
 function Register() {
 
+
     const [loading, setLoading] = useState(false);
+    const [serverErrors, setServerErrors] = useState(false);
+    const [serverErrorMessages, setServerErrorMessages] = useState([]);
+    const [acccountCreated, setAccountCreated] = useState(false);
 
     const validate = values => {
         const errors = {};
@@ -45,10 +50,16 @@ function Register() {
         onSubmit: async function(payload, { resetForm }){
           setLoading(true);
           httpService.post('/auth/register', payload).then(async function (response) {
-            AuthService.service().setToken(data.data.accessToken);
             setLoading(false);
             resetForm();
+            setAccountCreated(true);
           }).catch(function (error) {
+            if(error){
+                if(error.response.status == 422){
+                    setServerErrors(true);
+                    setServerErrorMessages(error.response.data.data);
+                }
+             }
             setLoading(false);
           });
         },
@@ -74,6 +85,14 @@ function Register() {
                     <div className="p-5 lg:p-6 flex-grow w-full">
                         <div className="sm:p-5 lg:px-10 lg:py-8">
                         <form onSubmit={formik.handleSubmit} className="space-y-6">
+                            {
+                                serverErrors  && serverErrorMessages.map((error, i) => (
+                                    <AlertError message={error.msg} key={i}/>
+                                ))
+                            }  
+
+                            {acccountCreated ? <AlertSuccess message="You have been successfully registered and logged in"/> : null}
+
                             <div className="space-y-1">
                                 <label htmlFor="name" className="font-medium">Name</label>
                                 <input 
